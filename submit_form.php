@@ -1,9 +1,9 @@
 <?php
-// Database credentials
-$servername = "localhost"; // or your database server
-$username = "root";        // your database username
-$password = "";            // your database password
-$dbname = "my_database";   // your database name
+// Database configuration
+$servername = "localhost";
+$username = "root"; // Your MySQL username
+$password = ""; // Your MySQL password
+$dbname = "portfolio";
 
 // Create connection
 $conn = new mysqli($servername, $username, $password, $dbname);
@@ -13,27 +13,23 @@ if ($conn->connect_error) {
     die("Connection failed: " . $conn->connect_error);
 }
 
-// Retrieve form data
-$username = $_POST['username'];
-$password = $_POST['password']; // You can hash the password for security
-$full_name = $_POST['full_name'];
-$email = $_POST['email'];
-$phone_number = $_POST['phone_number'];
-$subject = $_POST['subject'];
-$message = $_POST['message'];
+// Get form data
+$full_name = isset($_POST['full_name']) ? $_POST['full_name'] : '';
+$email = isset($_POST['email']) ? $_POST['email'] : '';
+$phone_number = isset($_POST['phone_number']) ? $_POST['phone_number'] : '';
+$subject = isset($_POST['subject']) ? $_POST['subject'] : '';
+$message = isset($_POST['message']) ? $_POST['message'] : '';
 
-// Prepare and bind the SQL statement
-$stmt = $conn->prepare("INSERT INTO contact_messages (username, email, phone_number, subject, message) VALUES (?, ?, ?, ?, ?)");
-$stmt->bind_param("sssss", $username, $email, $phone_number, $subject, $message);
+// Insert form data into the database
+$sql = "INSERT INTO contact_form (full_name, email, phone_number, subject, message)
+        VALUES ('$full_name', '$email', '$phone_number', '$subject', '$message')";
 
-// Execute the query
-if ($stmt->execute()) {
-    echo "Message sent successfully!";
+if ($conn->query($sql) === TRUE) {
+    echo "Message sent successfully, thank you so much!";
 } else {
-    echo "Error: " . $stmt->error;
+    echo "Error: " . $sql . "<br>" . $conn->error;
 }
 
 // Close connection
-$stmt->close();
 $conn->close();
 ?>
